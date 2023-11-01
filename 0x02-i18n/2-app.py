@@ -1,54 +1,44 @@
 #!/usr/bin/env python3
+'''Task 2: Get locale from request
+'''
 
-"""
-This module holds a simple module to
-learn and practice i18n in flask
-"""
-
-from flask import Flask,  render_template, request
+from flask import Flask, render_template, request
 from flask_babel import Babel
 
 
 class Config:
-    """
-    Configure the babel object
-    """
+    '''Config class'''
+
+    DEBUG = True
     LANGUAGES = ["en", "fr"]
-    BABEL_DEFAULT_LOCALE = 'en'
-    BABEL_DEFAULT_TIMEZONE = 'UTC'
+    BABEL_DEFAULT_LOCALE = "en"
+    BABEL_DEFAULT_TIMEZONE = "UTC"
 
 
 app = Flask(__name__)
+app.config.from_object(Config)
+app.url_map.strict_slashes = False
 babel = Babel(app)
 
 
 @babel.localeselector
-def get_locale():
-    """
-    Get the locale based on the request
-    Header from the frontend application
-    """
-    return request.accept_languages.best_match(["en", "fr", "de"])
+def get_locale() -> str:
+    """Retrieves the locale for a web page.
 
-
-app.config.from_object(Config)
-babel.init_app(app)
-
-
-@app.route("/", strict_slashes=False)
-def hello_holberton():
-    """
-    A simple function that returns
-    Hello world from a flask template
-    Args:
-        None
     Returns:
-        Returns a flask template
-    ____________________________
-    Example
-        hello_hoberton()
-    """""
-    return render_template("1-index.html")
+        str: best match
+    """
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
+
+
+@app.route('/')
+def index() -> str:
+    '''default route
+
+    Returns:
+        html: homepage
+    '''
+    return render_template("2-index.html")
 
 
 if __name__ == "__main__":
